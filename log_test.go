@@ -17,7 +17,7 @@ func TestLog(t *testing.T) {
 	c.NotPanic = true
 	l := New(c)
 	m := Map{
-		"meaning less map": true,
+		"meaningless map": true,
 	}
 	l.Debug("debug")
 	l.Info("info")

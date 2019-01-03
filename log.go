@@ -62,7 +62,7 @@ func DefaultConf() *Conf {
 		Prefix:      "",
 		Outs:        []io.Writer{os.Stdout},
 		Value:       nil,
-		Format:      "[%s] %s: %s. %s\n",
+		Format:      "[%s]%s %s. %s\n",
 		AddCaller:   true,
 		CallerSkip:  2,
 		AddTime:     true,
@@ -166,7 +166,7 @@ func (l *Logger) log(ll level, msg string, ms ...map[string]interface{}) {
 	}
 	if l.c.AddCaller {
 		_, file, line, _ := runtime.Caller(l.c.CallerSkip)
-		m["caller"] = fmt.Sprintf("file:%s, line: %d", file, line)
+		m["caller"] = fmt.Sprintf("%s:%d", file, line)
 	}
 	if l.c.AddTime {
 		t := ""
