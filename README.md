@@ -1,4 +1,4 @@
-EL
+# EL
 A Go log lib.
 
 ## Install
