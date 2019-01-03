@@ -62,7 +62,7 @@ func DefaultConf() *Conf {
 		Prefix:      "",
 		Outs:        []io.Writer{os.Stdout},
 		Value:       nil,
-		Format:      "[%s] %s: %s. %+v\n",
+		Format:      "[%s] %s: %s. %s\n",
 		AddCaller:   true,
 		CallerSkip:  2,
 		AddTime:     true,
@@ -74,28 +74,28 @@ func DefaultConf() *Conf {
 }
 
 // Debug is theLogger's debug method.
-func Debug(msg string, m map[string]interface{}) {
-	theLogger.log(DebugL, msg, m)
+func Debug(msg string, m ...map[string]interface{}) {
+	theLogger.log(DebugL, msg, m...)
 }
 
 // Info is theLogger's info method.
-func Info(msg string, m map[string]interface{}) {
-	theLogger.log(InfoL, msg, m)
+func Info(msg string, m ...map[string]interface{}) {
+	theLogger.log(InfoL, msg, m...)
 }
 
 // Warn is theLogger's warn method.
-func Warn(msg string, m map[string]interface{}) {
-	theLogger.log(WarnL, msg, m)
+func Warn(msg string, m ...map[string]interface{}) {
+	theLogger.log(WarnL, msg, m...)
 }
 
 // Error is theLogger's error method.
-func Error(msg string, m map[string]interface{}) {
-	theLogger.log(ErrorL, msg, m)
+func Error(msg string, m ...map[string]interface{}) {
+	theLogger.log(ErrorL, msg, m...)
 }
 
 // Panic is theLogger's panic method.
-func Panic(msg string, m map[string]interface{}) {
-	theLogger.log(PanicL, msg, m)
+func Panic(msg string, m ...map[string]interface{}) {
+	theLogger.log(PanicL, msg, m...)
 	if theLogger.c.NotPanic {
 		return
 	}
@@ -103,8 +103,8 @@ func Panic(msg string, m map[string]interface{}) {
 }
 
 // Fatal is theLogger's fatal method.
-func Fatal(msg string, m map[string]interface{}) {
-	theLogger.log(FatalL, msg, m)
+func Fatal(msg string, m ...map[string]interface{}) {
+	theLogger.log(FatalL, msg, m...)
 	if theLogger.c.NotFatal {
 		return
 	}
@@ -112,29 +112,29 @@ func Fatal(msg string, m map[string]interface{}) {
 }
 
 // Debug log a debug msg with value m.
-func (l *Logger) Debug(msg string, m map[string]interface{}) {
-	l.log(DebugL, msg, m)
+func (l *Logger) Debug(msg string, m ...map[string]interface{}) {
+	l.log(DebugL, msg, m...)
 }
 
 // Info log a info msg with value m.
-func (l *Logger) Info(msg string, m map[string]interface{}) {
-	l.log(InfoL, msg, m)
+func (l *Logger) Info(msg string, m ...map[string]interface{}) {
+	l.log(InfoL, msg, m...)
 }
 
 // Warn log a warn msg with value m.
-func (l *Logger) Warn(msg string, m map[string]interface{}) {
-	l.log(WarnL, msg, m)
+func (l *Logger) Warn(msg string, m ...map[string]interface{}) {
+	l.log(WarnL, msg, m...)
 }
 
 // Error log a error msg with value m.
-func (l *Logger) Error(msg string, m map[string]interface{}) {
-	l.log(ErrorL, msg, m)
+func (l *Logger) Error(msg string, m ...map[string]interface{}) {
+	l.log(ErrorL, msg, m...)
 }
 
 // Panic log a panic msg with value m.
 // if the conf `NotPanic` of l is false, panic after logging.
-func (l *Logger) Panic(msg string, m map[string]interface{}) {
-	l.log(PanicL, msg, m)
+func (l *Logger) Panic(msg string, m ...map[string]interface{}) {
+	l.log(PanicL, msg, m...)
 	if l.c.NotPanic {
 		return
 	}
@@ -143,8 +143,8 @@ func (l *Logger) Panic(msg string, m map[string]interface{}) {
 
 // Fatal log a fatal msg with value m.
 // if the conf `NotFatal` of l is false, os.Exit(1) after logging.
-func (l *Logger) Fatal(msg string, m map[string]interface{}) {
-	l.log(FatalL, msg, m)
+func (l *Logger) Fatal(msg string, m ...map[string]interface{}) {
+	l.log(FatalL, msg, m...)
 	if l.c.NotFatal {
 		return
 	}
@@ -152,12 +152,17 @@ func (l *Logger) Fatal(msg string, m map[string]interface{}) {
 }
 
 // log is the logging method.
-func (l *Logger) log(ll level, msg string, m map[string]interface{}) {
+func (l *Logger) log(ll level, msg string, ms ...map[string]interface{}) {
 	if ll < l.c.LowestLevel {
 		return
 	}
-	if m == nil {
-		m = make(map[string]interface{})
+	m := make(map[string]interface{})
+	if len(ms) != 0 {
+		for _, mm := range ms {
+			for k, v := range mm {
+				m[k] = v
+			}
+		}
 	}
 	if l.c.AddCaller {
 		_, file, line, _ := runtime.Caller(l.c.CallerSkip)
@@ -177,7 +182,10 @@ func (l *Logger) log(ll level, msg string, m map[string]interface{}) {
 	for k, v := range l.c.Value {
 		m[k] = v
 	}
-	finalLogMsg := fmt.Sprintf(l.c.Format, levelMap[ll], l.c.Prefix, msg, m)
+	mString := fmt.Sprintf("%+v", m)
+	mString = mString[4:]
+	mString = mString[:len(mString)-1]
+	finalLogMsg := fmt.Sprintf(l.c.Format, levelMap[ll], l.c.Prefix, msg, mString)
 	for _, v := range l.c.Outs {
 		v.Write([]byte(finalLogMsg))
 	}
