@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	// log level
 	DebugL level = iota
 	InfoL
 	WarnL
@@ -25,7 +26,10 @@ type Logger struct {
 	c *Conf
 }
 
+// theLogger is the Global logger.
 var theLogger *Logger
+
+// levelMap map level to string.
 var levelMap map[level]string
 
 func init() {
@@ -41,6 +45,8 @@ func init() {
 	}
 }
 
+// New returns a new Logger with Conf.
+// If len(c) == 0, use default conf. Otherwise use the first conf c[0].
 func New(c ...*Conf) *Logger {
 	if len(c) == 0 {
 		c = append(c, DefaultConf())
@@ -50,6 +56,7 @@ func New(c ...*Conf) *Logger {
 	}
 }
 
+// DefaultConf returns the default conf.
 func DefaultConf() *Conf {
 	return &Conf{
 		Prefix:      "",
@@ -66,22 +73,27 @@ func DefaultConf() *Conf {
 	}
 }
 
+// Debug is theLogger's debug method.
 func Debug(msg string, m map[string]interface{}) {
 	theLogger.log(DebugL, msg, m)
 }
 
+// Info is theLogger's info method.
 func Info(msg string, m map[string]interface{}) {
 	theLogger.log(InfoL, msg, m)
 }
 
+// Warn is theLogger's warn method.
 func Warn(msg string, m map[string]interface{}) {
 	theLogger.log(WarnL, msg, m)
 }
 
+// Error is theLogger's error method.
 func Error(msg string, m map[string]interface{}) {
 	theLogger.log(ErrorL, msg, m)
 }
 
+// Panic is theLogger's panic method.
 func Panic(msg string, m map[string]interface{}) {
 	theLogger.log(PanicL, msg, m)
 	if theLogger.c.NotPanic {
@@ -90,6 +102,7 @@ func Panic(msg string, m map[string]interface{}) {
 	panic(msg)
 }
 
+// Fatal is theLogger's fatal method.
 func Fatal(msg string, m map[string]interface{}) {
 	theLogger.log(FatalL, msg, m)
 	if theLogger.c.NotFatal {
@@ -98,22 +111,28 @@ func Fatal(msg string, m map[string]interface{}) {
 	os.Exit(1)
 }
 
+// Debug log a debug msg with value m.
 func (l *Logger) Debug(msg string, m map[string]interface{}) {
 	l.log(DebugL, msg, m)
 }
 
+// Info log a info msg with value m.
 func (l *Logger) Info(msg string, m map[string]interface{}) {
 	l.log(InfoL, msg, m)
 }
 
+// Warn log a warn msg with value m.
 func (l *Logger) Warn(msg string, m map[string]interface{}) {
 	l.log(WarnL, msg, m)
 }
 
+// Error log a error msg with value m.
 func (l *Logger) Error(msg string, m map[string]interface{}) {
 	l.log(ErrorL, msg, m)
 }
 
+// Panic log a panic msg with value m.
+// if the conf `NotPanic` of l is false, panic after logging.
 func (l *Logger) Panic(msg string, m map[string]interface{}) {
 	l.log(PanicL, msg, m)
 	if l.c.NotPanic {
@@ -122,6 +141,8 @@ func (l *Logger) Panic(msg string, m map[string]interface{}) {
 	panic(msg)
 }
 
+// Fatal log a fatal msg with value m.
+// if the conf `NotFatal` of l is false, os.Exit(1) after logging.
 func (l *Logger) Fatal(msg string, m map[string]interface{}) {
 	l.log(FatalL, msg, m)
 	if l.c.NotFatal {
@@ -130,6 +151,7 @@ func (l *Logger) Fatal(msg string, m map[string]interface{}) {
 	os.Exit(1)
 }
 
+// log is the logging method.
 func (l *Logger) log(ll level, msg string, m map[string]interface{}) {
 	if ll < l.c.LowestLevel {
 		return
