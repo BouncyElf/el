@@ -33,10 +33,5 @@ type Conf struct {
 
 // SetConf set theLogger's conf.
 func SetConf(c *Conf) {
-	theLogger.SetConf(c)
-}
-
-// SetConf set the l's conf.
-func (l *Logger) SetConf(c *Conf) {
-	l.c = c
+	theLogger.c = c
 }

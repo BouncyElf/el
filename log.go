@@ -22,18 +22,18 @@ const (
 type level int
 type Map map[string]interface{}
 
-type Logger struct {
+type logger struct {
 	c *Conf
 }
 
 // theLogger is the Global logger.
-var theLogger *Logger
+var theLogger *logger
 
 // levelMap map level to string.
 var levelMap map[level]string
 
 func init() {
-	theLogger = new(Logger)
+	theLogger = new(logger)
 	theLogger.c = DefaultConf()
 	levelMap = map[level]string{
 		DebugL: "debug",
@@ -42,17 +42,6 @@ func init() {
 		ErrorL: "error",
 		PanicL: "panic",
 		FatalL: "fatal",
-	}
-}
-
-// New returns a new Logger with Conf.
-// If len(c) == 0, use default conf. Otherwise use the first conf c[0].
-func New(c ...*Conf) *Logger {
-	if len(c) == 0 {
-		c = append(c, DefaultConf())
-	}
-	return &Logger{
-		c: c[0],
 	}
 }
 
@@ -69,7 +58,7 @@ func DefaultConf() *Conf {
 		TimeFormat:  "unixnano",
 		NotPanic:    false,
 		NotFatal:    false,
-		LowestLevel: InfoL,
+		LowestLevel: DebugL,
 	}
 }
 
@@ -111,48 +100,8 @@ func Fatal(msg string, m ...map[string]interface{}) {
 	os.Exit(1)
 }
 
-// Debug log a debug msg with value m.
-func (l *Logger) Debug(msg string, m ...map[string]interface{}) {
-	l.log(DebugL, msg, m...)
-}
-
-// Info log a info msg with value m.
-func (l *Logger) Info(msg string, m ...map[string]interface{}) {
-	l.log(InfoL, msg, m...)
-}
-
-// Warn log a warn msg with value m.
-func (l *Logger) Warn(msg string, m ...map[string]interface{}) {
-	l.log(WarnL, msg, m...)
-}
-
-// Error log a error msg with value m.
-func (l *Logger) Error(msg string, m ...map[string]interface{}) {
-	l.log(ErrorL, msg, m...)
-}
-
-// Panic log a panic msg with value m.
-// if the conf `NotPanic` of l is false, panic after logging.
-func (l *Logger) Panic(msg string, m ...map[string]interface{}) {
-	l.log(PanicL, msg, m...)
-	if l.c.NotPanic {
-		return
-	}
-	panic(msg)
-}
-
-// Fatal log a fatal msg with value m.
-// if the conf `NotFatal` of l is false, os.Exit(1) after logging.
-func (l *Logger) Fatal(msg string, m ...map[string]interface{}) {
-	l.log(FatalL, msg, m...)
-	if l.c.NotFatal {
-		return
-	}
-	os.Exit(1)
-}
-
 // log is the logging method.
-func (l *Logger) log(ll level, msg string, ms ...map[string]interface{}) {
+func (l *logger) log(ll level, msg string, ms ...map[string]interface{}) {
 	if ll < l.c.LowestLevel {
 		return
 	}
