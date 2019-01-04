@@ -20,13 +20,15 @@ const (
 )
 
 type level int
+
+// Map is the alias of map[string]interface{}
 type Map map[string]interface{}
 
 type logger struct {
 	c *Conf
 }
 
-// theLogger is the Global logger.
+// theLogger is the global instance logger.
 var theLogger *logger
 
 // levelMap map level to string.
