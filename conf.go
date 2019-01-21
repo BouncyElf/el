@@ -33,5 +33,7 @@ type Conf struct {
 
 // SetConf set theLogger's conf.
 func SetConf(c *Conf) {
+	theLogger.rwlock.Lock()
+	defer theLogger.rwlock.Unlock()
 	theLogger.c = c
 }

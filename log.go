@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -26,7 +27,9 @@ type level int
 type Map map[string]interface{}
 
 type logger struct {
-	c *Conf
+	c      *Conf
+	rwlock *sync.RWMutex
+	mulock *sync.Mutex
 }
 
 // theLogger is the global instance logger.
@@ -46,6 +49,8 @@ func init() {
 		PanicL: "panic",
 		FatalL: "fatal",
 	}
+	theLogger.rwlock = new(sync.RWMutex)
+	theLogger.mulock = new(sync.Mutex)
 }
 
 // DefaultConf returns the default conf.
@@ -105,6 +110,8 @@ func Fatal(msg string, m ...map[string]interface{}) {
 
 // log is the logging method.
 func (l *logger) log(ll level, msg string, ms ...map[string]interface{}) {
+	l.rwlock.RLock()
+
 	if ll < l.c.LowestLevel {
 		return
 	}
@@ -138,6 +145,12 @@ func (l *logger) log(ll level, msg string, ms ...map[string]interface{}) {
 	mString = mString[4:]
 	mString = mString[:len(mString)-1]
 	finalLogMsg := fmt.Sprintf(l.c.Format, levelMap[ll], l.c.Prefix, msg, mString)
+
+	l.rwlock.RUnlock()
+
+	l.mulock.Lock()
+	defer l.mulock.Unlock()
+
 	for _, v := range l.c.Outs {
 		v.Write([]byte(finalLogMsg))
 	}
