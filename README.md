@@ -1,5 +1,5 @@
 # EL
-A Go log lib.
+⛱A Go log lib.
 
 ## Feature
 - Simple API.
