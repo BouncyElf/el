@@ -24,4 +24,10 @@ func TestLog(t *testing.T) {
 	Error("error", m)
 	Panic("panic", m)
 	Fatal("fatal", m)
+	Debugf("debug with %+v", m)
+	Infof("info with %+v", m)
+	Warnf("warn with %+v", m)
+	Errorf("error with %+v", m)
+	Panicf("panic with %+v", m)
+	Fatalf("fatal with %+v", m)
 }

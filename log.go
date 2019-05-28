@@ -112,18 +112,22 @@ func Debugf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	theLogger.log(DebugL, msg)
 }
+
 func Infof(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	theLogger.log(InfoL, msg)
 }
+
 func Warnf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	theLogger.log(WarnL, msg)
 }
+
 func Errorf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	theLogger.log(ErrorL, msg)
 }
+
 func Panicf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	theLogger.log(PanicL, msg)
@@ -132,6 +136,7 @@ func Panicf(format string, args ...interface{}) {
 	}
 	panic(msg)
 }
+
 func Fatalf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	theLogger.log(FatalL, msg)
