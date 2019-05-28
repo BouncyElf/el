@@ -108,6 +108,39 @@ func Fatal(msg string, m ...map[string]interface{}) {
 	os.Exit(1)
 }
 
+func Debugf(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	theLogger.log(DebugL, msg)
+}
+func Infof(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	theLogger.log(InfoL, msg)
+}
+func Warnf(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	theLogger.log(WarnL, msg)
+}
+func Errorf(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	theLogger.log(ErrorL, msg)
+}
+func Panicf(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	theLogger.log(PanicL, msg)
+	if theLogger.c.NotPanic {
+		return
+	}
+	panic(msg)
+}
+func Fatalf(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	theLogger.log(FatalL, msg)
+	if theLogger.c.NotFatal {
+		return
+	}
+	os.Exit(1)
+}
+
 // log is the logging method.
 func (l *logger) log(ll level, msg string, ms ...map[string]interface{}) {
 	l.rwlock.RLock()
