@@ -5,6 +5,7 @@
 - Simple API.
 - Level logging.
 - Singleton.
+- Multiple Output.
 
 ## Install
 ```bash
